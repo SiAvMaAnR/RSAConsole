@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSA Console", "RSA Console.csproj", "{5C3C00FA-EE86-44AB-8691-043BE5869A42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{19FC22C8-D6A4-44B9-B9E7-F41E4E483DE9}"
+	ProjectSection(SolutionItems) = preProject
+		RSA.cs = RSA.cs
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C3C00FA-EE86-44AB-8691-043BE5869A42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C3C00FA-EE86-44AB-8691-043BE5869A42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C3C00FA-EE86-44AB-8691-043BE5869A42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C3C00FA-EE86-44AB-8691-043BE5869A42}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68F452E5-81F0-4724-9951-769FEE2DC7BA}
+	EndGlobalSection
+EndGlobal
