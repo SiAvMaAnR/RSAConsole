@@ -6,11 +6,18 @@ public class RSA
 	private long q;// q простое число
 
 	private long e;// e открытая экспонента
+
 	private long d;// d секретная экспонента
 
 	private long n;// n
 	private long Fi;// Ф(n)
 
+	//private string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя0123456789.,?!*/+-=_()%;:#";//Набор сиволов
+
+	private int[] numericConversion;
+	private long[] encrypt;
+	private string[] alphabetEncrypt;
 	//long p = 36563, long q = 57731;
 	//string text = PUBLIC;
 
@@ -35,12 +42,6 @@ public class RSA
 		}
 		return result;
 	}
-
-
-	//private static bool IsCoprime(long a, long b)//Проверка на взаимную простоту
-	//{
-	//	return a == b ? a == 1 : a > b? IsCoprime(a - b, b) : IsCoprime(b - a, a);
-	//}
 
 	private static long GCD(long A,long B)//Поиск НОД | Алгоритм Евклида
 	{
@@ -104,20 +105,80 @@ public class RSA
 		Console.WriteLine($"Процесс инициирует абонент B!\n");
 
 		Console.WriteLine($"У абонента B:");
-		Console.WriteLine($"Введем p = {p}");
-		Console.WriteLine($"Введем q = {q}");
-		Console.WriteLine($"Вычислим n из выражения по формуле n = p * q = {n}");
-		Console.WriteLine($"Вычислим Ф(n) по формуле Ф(n) = (p-1)*(q-1). Ф(n) = {Fi}");
-		Console.WriteLine($"Выбираем ключ e, соответствующий условию алгоритма. e = {e}");
-		Console.WriteLine($"Сгенерируем ключ d, соответствующий e^-1 (mod Ф(n)). d = {d}");
+		Console.WriteLine($"Введем p = {p};");
+		Console.WriteLine($"Введем q = {q};");
+		Console.WriteLine($"Вычислим n из выражения по формуле n = p * q = {n};");
+		Console.WriteLine($"Вычислим Ф(n) по формуле Ф(n) = (p-1)*(q-1). Ф(n) = {Fi};");
+		Console.WriteLine($"Выбираем ключ e, соответствующий условию алгоритма. e = {e};");
+		Console.WriteLine($"Сгенерируем ключ d, соответствующий e^-1 (mod Ф(n)). d = {d};\n");
 
 		Console.WriteLine($"У абонента A:");
-		Console.WriteLine($"У абонента A:");
-		Console.WriteLine($"У абонента A:");
+		Console.WriteLine($"Формируем алфавит;");
+
+		Console.Write($"Преобразовываем текст в числовой эквивалент: ");
+		foreach (var item in numericConversion) Console.Write(item+" ");
+
+		Console.Write($"\nВыполняем цифрование по формуле m^e(mod n): ");
+		foreach (var item in encrypt) Console.Write(item + " ");
+
+		Console.WriteLine($"\nПриведение к символьному виду: ");
 	}
 
-	private void keyGeneration()
+	public void getOpenKey(out long e,out long n)//Получить открытый ключ
 	{
+		e = this.e;
+		n = this.n;
+	}
 
+	private long reSquaring(long m, long e, long n)//c=m^e(mod n)
+	{
+		long C = 0, E = e;
+
+		int i;
+		for (i=1; E!= 1; i++)
+			E = E / 2;
+
+		long b = m % n;
+		for (int j = 1; j < i; j++)
+		{
+			b = (long)Math.Pow(b, 2) % n;
+		}
+		C = (m * b)%n;
+		return C;
+	}
+
+	private string symbolicRepresentationToString(long C)//Приведение к символьному типу
+	{
+		C.ToString().Length;
+		return "";
+	}
+
+	public string[] Encrypt(string m, long e, long n)//Зашифровать
+	{
+		numericConversion = new int[m.Length];
+		for (int i = 0; i < m.Length; i++)
+		{
+			for (int j = 0; j < alphabet.Length; j++)
+			{
+				if (m[i]==alphabet[j])
+				{
+					numericConversion[i] = j; break;
+				}
+			}
+		}
+
+		encrypt = new long[numericConversion.Length];//Шифротекст
+		for (int i = 0; i < numericConversion.Length; i++)
+		{
+			encrypt[i] = reSquaring(numericConversion[i], e, n);
+		}
+
+
+		alphabetEncrypt = new string[encrypt.Length];//Шифротекст в символьном представлении
+		for (int i = 0; i < encrypt.Length; i++)
+		{
+			alphabetEncrypt[i] = symbolicRepresentationToString(encrypt[i]);
+		}
+		return alphabetEncrypt;
 	}
 }
