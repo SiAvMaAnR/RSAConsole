@@ -10,7 +10,7 @@ namespace RSA_Console
 	{
 		static void Main(string[] args)
 		{
-
+			RSA algorithmRSA = new RSA(17,7,11);
 		}
 	}
 }
