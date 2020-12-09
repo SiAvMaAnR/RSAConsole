@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 
 public class RSA
 {
@@ -12,14 +13,60 @@ public class RSA
 	private long n;// n
 	private long Fi;// Ф(n)
 
-	//private string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	private string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя0123456789.,?!*/+-=_()%;:#";//Набор сиволов
+	private string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	//private string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя0123456789.,?!*/+-=_()%;:#";//Набор сиволов
 
-	private int[] numericConversion;
-	private long[] encrypt;
-	private string[] alphabetEncrypt;
-	//long p = 36563, long q = 57731;
-	//string text = PUBLIC;
+	private int[] numericConversion;//Перевод текста в числовую запись
+
+	private long[] encrypt;//Числовой шифр
+	private string[] alphabetEncrypt;//Зашифрованное сообщение в символьном представлении
+
+	private long[] decrypt;//Числовой шифр до расшифровки
+	private long[] alphabetDecrypt;//Дешифрованное сообщение в численном представлении
+	private string OutDecrypt;//Дешифрованное сообщение
+
+
+
+
+
+	public void getPublicKey(out long e, out long n)//Получить открытый ключ
+	{
+		e = this.e;
+		n = this.n;
+	}
+
+	public void getPrivateKey(out long d, out long n)//Получить секретный ключ
+	{
+		d = this.d;
+		n = this.n;
+	}
+
+
+
+	public RSA(long e, long p, long q)//Генерация ключей
+	{
+		try
+		{
+			this.p = (IsPrimeNumber(p)) ? p : throw new Exception("Error: p должно быть простым");
+			this.q = (IsPrimeNumber(q)) ? q : throw new Exception("Error: q должно быть простым");
+
+			this.n = p * q;// n модуль
+
+			this.Fi = (p - 1) * (q - 1);// Фи(n)
+
+			this.e = ((1 < e && e < Fi) && (GCD(e, Fi) == 1)) ? e : throw new Exception("Error: Должно выполняться 2 условия:\n 1 - (1 < e < Ф(n))\n 2 - e и Ф(n) - взаимно простые числа!");
+
+			extendedGCD(e, Fi, out long x, out long y, out long d);
+			this.d = x + Fi;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
+	}
+
+
+
 
 	private static bool IsPrimeNumber(long n)//Проверка на простоту
 	{
@@ -50,7 +97,7 @@ public class RSA
 		return A;
 	}
 
-	private static void extendedGCD(long a, long b, out long x, out long y, out long d)
+	private static void extendedGCD(long a, long b, out long x, out long y, out long d)//Расширенный алгоритм Евклида
 	{
 		long q, r, x1, x2, y1, y2;
 
@@ -73,31 +120,12 @@ public class RSA
 			x2 = x1; x1 = x; y2 = y1; y1 = y;
 		}
 		d = a; x = x2; y = y2;
-	}//Расширенный алгоритм Евклида
-
-	public RSA(long e, long p, long q)//Конструктор
-	{
-		try
-		{
-			this.p = (IsPrimeNumber(p)) ? p : throw new Exception("Error: p должно быть простым");
-			this.q = (IsPrimeNumber(q)) ? q : throw new Exception("Error: q должно быть простым");
-
-			this.n = p * q;// n модуль
-
-			this.Fi = (p - 1) * (q - 1);// Фи(n)
-
-			this.e = ((1 < e && e < Fi) && (GCD(e, Fi)==1)) ? e : throw new Exception("Error: Должно выполняться 2 условия:\n 1 - (1 < e < Ф(n))\n 2 - e и Ф(n) - взаимно простые числа!");
-
-			extendedGCD(e, Fi, out long x, out long y, out long d);
-			this.d = x + Fi;
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine(ex.Message);
-		}
 	}
 
-	public void Cipher()
+	
+	
+	
+	public void CipherLog()//Лог работы программы
 	{
 		//(e,n) --> Открытый ключ
 		//(d,n) --> Закрытый ключ
@@ -121,42 +149,77 @@ public class RSA
 		Console.Write($"\nВыполняем цифрование по формуле m^e(mod n): ");
 		foreach (var item in encrypt) Console.Write(item + " ");
 
-		Console.WriteLine($"\nПриведение к символьному виду: ");
+		Console.Write($"\nПриведение к символьному виду: ");
+		foreach (var item in alphabetEncrypt) Console.Write(item+" ");
+
+		Console.WriteLine("\nПередаем зашифрованное сообщение Абоненту B;");
+
+		Console.WriteLine("\nУ абонента B:");
+		Console.Write("Преобразование шифра в числовой эквивалент: ");
+		foreach (var item in alphabetDecrypt) Console.Write(item+" ");
+
+		Console.Write("\nРасшифровка сообщения: ");
+		foreach (var item in decrypt)Console.Write(item + " ");
+
+		Console.Write("\nРасшифрованное текстовое сообщение: ");
+		foreach (var item in OutDecrypt) Console.Write(item);
+		Console.WriteLine();
 	}
 
-	public void getOpenKey(out long e,out long n)//Получить открытый ключ
-	{
-		e = this.e;
-		n = this.n;
-	}
 
-	private long reSquaring(long m, long e, long n)//c=m^e(mod n)
+	public static BigInteger reSquaring(BigInteger m, BigInteger e, BigInteger n)//c=m^e(mod n)
 	{
-		long C = 0, E = e;
+		BigInteger E = e;
 
 		int i;
-		for (i=1; E!= 1; i++)
+		for (i = 1; E != 1; i++)//Проверка количества элементов
 			E = E / 2;
 
-		long b = m % n;
-		for (int j = 1; j < i; j++)
+		BigInteger[] bynaryN = new BigInteger[i];
+
+		E = e;
+		for (int j = 0; j < i; j++)//Степень в бинарном представлении
 		{
-			b = (long)Math.Pow(b, 2) % n;
+			bynaryN[j] = E % 2;
+			E = E / 2;
 		}
-		C = (m * b)%n;
-		return C;
+
+		BigInteger b = m % n;
+		for (int j = 1; j < i; j++)//Возведение в степень
+		{
+			b = BigInteger.ModPow(b, 2, n);
+			if (bynaryN[j] == 1)
+				m = (m * b) % n;
+		}
+		return m;
 	}
+
+	//=========================================================================================================== Шифрование
 
 	private string symbolicRepresentationToString(long C)//Приведение к символьному типу
 	{
-		C.ToString().Length;
-		return "";
+		string returnStr="";
+
+		int numberLength = C.ToString().Length;//Количество цифр в числе
+
+		long index;
+		long numberC = C;
+
+		for (int i = 1; i <= numberLength; i++)
+		{
+			index = (numberC / (long)Math.Pow(alphabet.Length, numberLength - i));
+
+			numberC -= (index * (long)Math.Pow(alphabet.Length, numberLength - i));
+
+			returnStr += alphabet[(int)index];
+		}
+		return returnStr;
 	}
 
 	public string[] Encrypt(string m, long e, long n)//Зашифровать
 	{
 		numericConversion = new int[m.Length];
-		for (int i = 0; i < m.Length; i++)
+		for (int i = 0; i < m.Length; i++)//Числовой вид сообщения
 		{
 			for (int j = 0; j < alphabet.Length; j++)
 			{
@@ -170,9 +233,8 @@ public class RSA
 		encrypt = new long[numericConversion.Length];//Шифротекст
 		for (int i = 0; i < numericConversion.Length; i++)
 		{
-			encrypt[i] = reSquaring(numericConversion[i], e, n);
+			encrypt[i] = (long)reSquaring(numericConversion[i], e, n);
 		}
-
 
 		alphabetEncrypt = new string[encrypt.Length];//Шифротекст в символьном представлении
 		for (int i = 0; i < encrypt.Length; i++)
@@ -180,5 +242,48 @@ public class RSA
 			alphabetEncrypt[i] = symbolicRepresentationToString(encrypt[i]);
 		}
 		return alphabetEncrypt;
+	}
+
+
+	//=========================================================================================================== Дешифрование
+
+	private long antiSymbolicRepresentationToString(string Str)//Перевод символов в числовой эквивалент
+	{
+		
+		long StrLength = Str.Length;//Количество букв
+		long C = 0;//В числовой эквивалент
+
+		for (int i = 0; i < StrLength; i++)
+		{
+			for (int j = 0; j < alphabet.Length; j++)
+			{
+				if (Str[i] == alphabet[j])
+				{
+					C += j * (long)Math.Pow(alphabet.Length, StrLength-i-1); break;
+				}
+			}
+		}
+		return C;//Вернуть число
+	}
+	public string Decrypt(string[] m, long d, long n)//Дешифровать
+	{
+		alphabetDecrypt = new long[m.Length];//Шифротекст в символьном представлении
+		for (int i = 0; i < m.Length; i++)
+		{
+			alphabetDecrypt[i] = antiSymbolicRepresentationToString(m[i]);
+		}
+
+		decrypt = new long[alphabetDecrypt.Length];//Шифротекст в число
+		for (int i = 0; i < alphabetDecrypt.Length; i++)
+		{
+			decrypt[i] = (long)reSquaring(alphabetDecrypt[i], d, n);
+		}
+
+		for (int i = 0; i < m.Length; i++)
+		{
+			OutDecrypt += alphabet[(int)decrypt[i]].ToString();
+		}
+
+		return OutDecrypt;
 	}
 }

@@ -10,22 +10,18 @@ namespace RSA_Console
 	{
 		static void Main(string[] args)
 		{
-			RSA algorithmRSA = new RSA(17,36563,57731);
-			//RSA algorithmRSA = new RSA(3, 3, 11);
+			RSA algorithmRSA = new RSA(17,36563,57731);//Генерируем ключи
 
-			//RSA algorithmRSA = new RSA(17,7,11);//Генерируем ключи
+			algorithmRSA.getPublicKey(out long e, out long n1);//Возврат открытых ключей
 
+			string[] rsaEncrypt = algorithmRSA.Encrypt("PUBLIC", e, n1);//Зашифровываем сообщение
 
-			algorithmRSA.getOpenKey(out long e, out long n);//Возврат открытых ключей
+			algorithmRSA.getPrivateKey(out long d, out long n2);//Возврат открытых ключей
 
-			//algorithmRSA.Encrypt("PUBLIC", e, n);//Зашифровываем сообщение
-			algorithmRSA.Encrypt("PUBLIC", e, n);//Зашифровываем сообщение
-
+			string rsaDecrypt = algorithmRSA.Decrypt(rsaEncrypt, d, n2);//Дешифровываем сообщение
 
 
-			algorithmRSA.Cipher();
-
-
+			algorithmRSA.CipherLog();
 		}
 	}
 }
